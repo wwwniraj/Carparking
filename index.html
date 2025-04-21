@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Car Parking Lot with Camera</title>
+  <title>Car Parking with Plate Scanner</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Car Parking Lot 🚗📸</h1>
-    
+    <h1>Smart Parking System 🚗📸</h1>
+
     <video id="video" autoplay playsinline></video>
-    <button onclick="parkCar()">📷 Park Car</button>
-    
+    <div>
+      <button onclick="switchCamera()">🔄 Switch Camera</button>
+      <button onclick="parkCar()">📷 Scan & Park</button>
+    </div>
+
     <canvas id="canvas" style="display: none;"></canvas>
     <div id="parking-lot"></div>
   </div>
