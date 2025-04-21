@@ -69,3 +69,8 @@ function removeCar(carId) {
   const el = document.getElementById(carId);
   if (el) el.remove();
 }
+
+navigator.mediaDevices.enumerateDevices().then(devices => {
+    console.log("Available devices:", devices);
+  });
+  
