@@ -2,40 +2,47 @@ let video = document.getElementById('video');
 let canvas = document.getElementById('canvas');
 let parkingLot = document.getElementById('parking-lot');
 let carCount = 0;
-let currentFacing = 'environment'; // back by default
+let currentStream = null;
+let useFrontCamera = false;
 
-// Start camera
-function startCamera(facingMode = 'environment') {
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: facingMode }
-  })
-  .then(stream => {
-    video.srcObject = stream;
-  })
-  .catch(err => {
-    alert('Camera not accessible: ' + err);
-  });
-}
-
-startCamera(currentFacing);
-
-function switchCamera() {
-  currentFacing = currentFacing === 'user' ? 'environment' : 'user';
-  if (video.srcObject) {
-    video.srcObject.getTracks().forEach(track => track.stop());
+async function startCamera() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
   }
-  startCamera(currentFacing);
+
+  const constraints = {
+    video: {
+      facingMode: useFrontCamera ? 'user' : 'environment'
+    },
+    audio: false
+  };
+
+  try {
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = currentStream;
+  } catch (err) {
+    console.error("Camera error:", err);
+    alert("Could not access camera: " + err.message);
+  }
 }
 
+// Initialize camera
+startCamera();
+
+// Switch between front/back
+function switchCamera() {
+  useFrontCamera = !useFrontCamera;
+  startCamera();
+}
+
+// Capture and scan
 function parkCar() {
-  // Capture frame
   const ctx = canvas.getContext('2d');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   const imageDataURL = canvas.toDataURL('image/png');
 
-  // OCR with Tesseract.js
   Tesseract.recognize(canvas, 'eng', {
     logger: m => console.log(m)
   }).then(({ data: { text } }) => {
